@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { IoCalendar } from "react-icons/io5";
 import { PagesContext } from "./context";
 import Info from "./Info";
 
 function Weton() {
   const dateRef = useRef();
-  const { date, setDateValue, api } = useContext(PagesContext);
+  const { date, setDateValue } = useContext(PagesContext);
 
   const dateChange = () => {
     setDateValue(dateRef.current.value);
