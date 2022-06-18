@@ -8,6 +8,7 @@ export const PagesContext = createContext(0);
 export default function Context() {
   const [api, setApi] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fault, setFault] = useState(false);
 
   useEffect(() => {
     async function ambilData() {
@@ -16,8 +17,11 @@ export default function Context() {
         .select("*")
         .order("time", { ascending: false })
         .limit(1);
-      setApi({ data: { now: new Date(), data }, error });
+      setApi({ data, error });
       setLoading(false);
+      if (new Date() - new Date(data[0].time) > 320000) {
+        setFault(true)
+      }
     }
     ambilData();
 
@@ -28,7 +32,7 @@ export default function Context() {
   }, []);
 
   return (
-    <PagesContext.Provider value={{ api, loading }}>
+    <PagesContext.Provider value={{ api, loading, fault }}>
       <App />
     </PagesContext.Provider>
   );
