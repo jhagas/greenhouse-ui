@@ -1,5 +1,8 @@
 import { useContext } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { MdOutlineHighlight, MdThermostat } from "react-icons/md";
+import { WiHumidity } from "react-icons/wi";
+import Moment from "react-moment";
 import { PagesContext } from "./context";
 
 export default function Info() {
@@ -20,35 +23,49 @@ export default function Info() {
   };
 
   const Show = () => {
-    let hari =
-      api.jawa.weton +
-      ", " +
-      api.jawa.tanggal +
-      " " +
-      api.jawa.bulan +
-      " " +
-      api.jawa.tahun;
-
-    let mangsa = api.jawa.mangsa;
-
     return (
-      <div className="my-5 px-4 max-w-5xl text-center">
-        <h1 className="text-2xl text-sky-800 dark:text-amber-500 font-extrabold mb-3">
-          KALENDER JAWA
-        </h1>
-        <div className="text-stone-700 dark:text-stone-300">
-          <p className="text-xl font-semibold">{hari}</p>
-          <p>Neptu {api.jawa.neptu}</p>
-          <p>Warsa {api.jawa.warsa}</p>
-          <p>Kurup {api.jawa.kurup}</p>
+      <div className="text-stone-700 dark:text-stone-300">
+        <div className="stats shadow-md bg-gray-200 dark:bg-base-200 stats-vertical lg:stats-horizontal mb-2">
+          <div className="stat">
+            <div className="stat-figure dark:text-secondary text-primary">
+              <MdThermostat size="32px" />
+            </div>
+            <div className="stat-title text-stone-700 dark:text-stone-300">Temperature</div>
+            <div className="stat-value text-cyan-900 dark:text-stone-300">{api.data.data[0].temp}°C</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure dark:text-secondary text-primary">
+              <WiHumidity size="40px" />
+            </div>
+            <div className="stat-title text-stone-700 dark:text-stone-300">Humidity</div>
+            <div className="stat-value text-cyan-900 dark:text-stone-300">{api.data.data[0].humid}%</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure dark:text-secondary text-primary">
+              <MdOutlineHighlight size="32px" />
+            </div>
+            <div className="stat-title text-stone-700 dark:text-stone-300">Light Intensity</div>
+            <div className="stat-value text-cyan-900 dark:text-stone-300">{api.data.data[0].lux} Lux</div>
+          </div>
         </div>
-        <div className="text-stone-700 dark:text-stone-300 mt-3">
-          <p className="text-lg font-semibold mb-1">Mangsa {mangsa.nama}</p>
-          <p>{mangsa.deskripsi}</p>
-        </div>
+        <p className=" text-xs opacity-60 text-center">
+          Latest update on:{" "}
+          <Moment format="hh:mm, DD MMMM YYYY">{api.data.data[0].time}</Moment>
+        </p>
       </div>
     );
   };
 
-  return <div>{loading ? <Loading /> : <Show />}</div>;
+  return (
+    <div
+      className="flex flex-col w-full justify-center items-center "
+      style={{
+        height: "calc(100% - 4rem)",
+      }}
+    >
+      <div>{loading ? <Loading /> : <Show />}</div>
+    </div>
+  );
 }

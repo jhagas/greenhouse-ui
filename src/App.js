@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { BsCloudMoonFill, BsSun } from "react-icons/bs";
-import { AiTwotoneThunderbolt } from "react-icons/ai";
-import Weton from './Weton'
+import { ImLeaf } from "react-icons/im";
+import { IoStatsChart } from "react-icons/io5";
+import Info from "./Info";
 
 function App() {
   // check if localstorage with key "dark" exist
@@ -27,23 +28,44 @@ function App() {
       <div className="h-screen transition duration-300 w-full bg-[#F2F2F2] dark:bg-[#16222A]">
         <div className="flex flex-row items-center px-8 h-16 justify-between">
           <div className="flex flex-row items-center dark:text-yellow-300 text-sky-800 transition-colors duration-300">
-            <AiTwotoneThunderbolt size="24px" />
-            <p className="text-lg transition font-semibold ml-1 text-gray-700 dark:text-stone-100">
-              Wetonizer
+            <ImLeaf size="24px" />
+            <p className="text-lg transition font-semibold ml-2 text-gray-700 dark:text-stone-100">
+              GreenHouse.mu
             </p>
           </div>
-          <div
-            onClick={toogleDark}
-            className="group cursor-pointer transition-colors duration-300 hover:text-purple-600 dark:hover:text-yellow-300 text-gray-600 dark:text-white"
-          >
-            {dark ? <BsSun size="24px" /> : <BsCloudMoonFill size="24px" />}
-            <div className="flex flex-row fixed right-[4.5rem] bg-stone-700 border border-gray-600 rounded-md text-zinc-50 p-3 group-hover:opacity-100 group-hover:translate-x-0 opacity-0 translate-x-2 transition -translate-y-8 text-sm">
-              <p>Toogle dark mode</p>
-              <div className="fixed translate-x-[7.75rem] border-t-8 border-b-8 border-t-transparent border-b-transparent border-l-8 border-l-stone-700"></div>
+          <div className="flex flex-row items-center gap-6">
+            <div className="tooltip tooltip-left" data-tip="Full stats">
+              <label htmlFor="my-modal-3">
+                <div className="hover:text-purple-600 cursor-pointer transition-colors duration-300 dark:hover:text-yellow-300 text-gray-600 dark:text-white">
+                  <IoStatsChart size="24px" />
+                </div>
+              </label>
+              <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+              <div className="modal">
+                <div className="modal-box relative">
+                  <label
+                    htmlFor="my-modal-3"
+                    className="btn btn-sm btn-circle absolute right-2 top-2"
+                  >
+                    ✕
+                  </label>
+                  <h3 className="text-lg font-bold">
+                    FULL STATS
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div className="tooltip tooltip-left" data-tip="Dark toogle">
+              <div
+                onClick={toogleDark}
+                className="cursor-pointer transition-colors duration-300 hover:text-purple-600 dark:hover:text-yellow-300 text-gray-600 dark:text-white"
+              >
+                {dark ? <BsSun size="24px" /> : <BsCloudMoonFill size="24px" />}
+              </div>
             </div>
           </div>
         </div>
-        <Weton />
+        <Info />
       </div>
     </div>
   );
