@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createContext } from "react";
-import App from "./App";
-import { supabase } from "./supabase/supabase";
+import App from "../page/App";
+import { supabase } from "./supabase";
 
 export const PagesContext = createContext(0);
 

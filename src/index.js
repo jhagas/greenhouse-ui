@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Context from './context';
+import Context from './supabase/context';
 import './index.css';
 
 ReactDOM.render(

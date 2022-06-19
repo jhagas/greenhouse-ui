@@ -3,7 +3,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdError, MdOutlineHighlight, MdThermostat } from "react-icons/md";
 import { WiHumidity } from "react-icons/wi";
 import Moment from "react-moment";
-import { PagesContext } from "./context";
+import { PagesContext } from "../supabase/context";
 
 export default function Info() {
   const { api, loading, fault } = useContext(PagesContext);
@@ -28,7 +28,7 @@ export default function Info() {
         <div className="text-red-600 animate-bounce">
           <MdError size="40px" />
         </div>
-        <p className="text-center">
+        <p className="text-center text-gray-600 dark:text-gray-400">
           There's some problem, please check your internet connection and
           refresh the page.
         </p>
@@ -90,8 +90,8 @@ export default function Info() {
           </div>
         </div>
         <p className=" text-xs opacity-60 text-center">
-          Last update at{" "}
-          <Moment format="hh:mm, DD MMMM YYYY">{api.data[0].time}</Moment>
+          Last updated at{" "}
+          <Moment format="HH:mm, DD MMMM YYYY">{api.data[0].time}</Moment>
         </p>
       </div>
     );

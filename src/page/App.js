@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { BsCloudMoonFill, BsSun } from "react-icons/bs";
 import { ImLeaf } from "react-icons/im";
-import { IoStatsChart } from "react-icons/io5";
 import Info from "./Info";
+import Stats from "./Stats";
 
 function App() {
   // check if localstorage with key "dark" exist
@@ -34,27 +34,7 @@ function App() {
             </p>
           </div>
           <div className="flex flex-row items-center gap-6">
-            <div className="tooltip tooltip-left" data-tip="Full stats">
-              <label htmlFor="my-modal-3">
-                <div className="hover:text-purple-600 cursor-pointer transition-colors duration-300 dark:hover:text-yellow-300 text-gray-600 dark:text-white">
-                  <IoStatsChart size="24px" />
-                </div>
-              </label>
-              <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-              <div className="modal">
-                <div className="modal-box relative">
-                  <label
-                    htmlFor="my-modal-3"
-                    className="btn btn-sm btn-circle absolute right-2 top-2"
-                  >
-                    ✕
-                  </label>
-                  <h3 className="text-lg font-bold">
-                    FULL STATS
-                  </h3>
-                </div>
-              </div>
-            </div>
+            <Stats />
             <div className="tooltip tooltip-left" data-tip="Dark toogle">
               <div
                 onClick={toogleDark}
