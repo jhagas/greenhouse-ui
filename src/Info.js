@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { MdOutlineHighlight, MdThermostat } from "react-icons/md";
+import { MdError, MdOutlineHighlight, MdThermostat } from "react-icons/md";
 import { WiHumidity } from "react-icons/wi";
 import Moment from "react-moment";
 import { PagesContext } from "./context";
@@ -17,6 +17,20 @@ export default function Info() {
         />
         <p className="text-stone-700 dark:text-stone-300 text-xl animate-pulse font-bold my-2">
           Loading Data...
+        </p>
+      </div>
+    );
+  };
+
+  const ErrorMessage = () => {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <div className="text-red-600 animate-bounce">
+          <MdError size="48px" />
+        </div>
+        <p>
+          There's some problem, please check your internet connection and
+          refresh the page.
         </p>
       </div>
     );
@@ -90,7 +104,9 @@ export default function Info() {
         height: "calc(100% - 4rem)",
       }}
     >
-      <div>{loading ? <Loading /> : <Show />}</div>
+      <div>
+        {!api.error ? loading ? <Loading /> : <Show /> : <ErrorMessage />}
+      </div>
     </div>
   );
 }
