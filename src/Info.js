@@ -24,11 +24,11 @@ export default function Info() {
 
   const ErrorMessage = () => {
     return (
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-2 max-w-md px-6">
         <div className="text-red-600 animate-bounce">
-          <MdError size="48px" />
+          <MdError size="40px" />
         </div>
-        <p>
+        <p className="text-center">
           There's some problem, please check your internet connection and
           refresh the page.
         </p>
@@ -52,7 +52,7 @@ export default function Info() {
               : "Monitoring Device is fully functional"}
           </p>
         </div>
-        <div className="stats shadow-md bg-gray-200 dark:bg-base-200 stats-vertical lg:stats-horizontal mb-2">
+        <div className="stats shadow-md bg-gray-200 dark:bg-slate-800 stats-vertical lg:stats-horizontal mb-2">
           <div className="stat">
             <div className="stat-figure dark:text-secondary text-primary">
               <MdThermostat size="32px" />
