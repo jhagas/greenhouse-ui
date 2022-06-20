@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { BsCloudMoonFill, BsSun } from "react-icons/bs";
 import { ImLeaf } from "react-icons/im";
 import { PagesContext } from "../supabase/context";
