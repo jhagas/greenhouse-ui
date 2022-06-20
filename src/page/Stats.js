@@ -11,13 +11,15 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabase/supabase";
 import moment from "moment";
 import Loading from "./components/Load";
 import { PagesContext } from "../supabase/context";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 ChartJS.register(
+  zoomPlugin,
   TimeScale,
   LinearScale,
   PointElement,
@@ -27,11 +29,31 @@ ChartJS.register(
   Legend
 );
 
+const zoomOptions = {
+  pan: {
+    enabled: true,
+    mode: "xy",
+  },
+  zoom: {
+    wheel: {
+      enabled: true,
+    },
+    pinch: {
+      enabled: true,
+    },
+    mode: "xy",
+  },
+};
+
 export default function Stats() {
-  const [temp, setTemp] = useState(null);
-  const [humid, setHumid] = useState(null);
+  const [th, setTH] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(0);
+
+  const RefA = useRef(null);
+  const resetZoom = () => {
+    RefA.current.resetZoom();
+  };
 
   const { dark } = useContext(PagesContext);
 
@@ -41,7 +63,13 @@ export default function Stats() {
 
   const options = {
     responsive: true,
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+    stacked: false,
     plugins: {
+      zoom: zoomOptions,
       legend: {
         labels: {
           color: color[0],
@@ -52,7 +80,10 @@ export default function Stats() {
       x: {
         type: "time",
         time: {
-          unit: "hour",
+          displayFormats: {
+            minute: "HH:mm",
+            hour: "HH:mm",
+          },
         },
         ticks: {
           color: color[0],
@@ -63,12 +94,22 @@ export default function Stats() {
       },
       y: {
         ticks: {
-          color: color[0],
+          color: "#1FB2A6",
         },
         grid: {
           color: color[1],
         },
+        position: "left"
       },
+      y1: {
+        ticks: {
+          color: "#D926A9",
+        },
+        grid: {
+          color: color[1],
+        },
+        position: "right"
+      }
     },
   };
 
@@ -78,7 +119,7 @@ export default function Stats() {
       .subtract(value, "days");
     const date = momentval.format("YYYY-MM-DD 17:00:00");
     const datetom = momentval.add(1, "day").format("YYYY-MM-DD 17:00:00");
-    ambilData();
+
     async function ambilData() {
       let { data } = await supabase
         .from("data")
@@ -86,7 +127,7 @@ export default function Stats() {
         .gte("time", `${date}`)
         .lt("time", `${datetom}`)
         .order("time", { ascending: true });
-      let temperature = await {
+      let temphumid = await {
         datasets: [
           {
             // data: [{x: 0, y:0}],
@@ -96,11 +137,8 @@ export default function Stats() {
             }),
             borderColor: "#1FB2A6",
             backgroundColor: "#1FB2A650",
+            yAxisID: "y",
           },
-        ],
-      };
-      let humidity = await {
-        datasets: [
           {
             // data: [{x: 0, y:0}],
             label: "Humidity (%)",
@@ -109,29 +147,33 @@ export default function Stats() {
             }),
             borderColor: "#D926A9",
             backgroundColor: "#D926A950",
+            yAxisID: "y1",
           },
         ],
       };
-      setTemp(temperature);
-      setHumid(humidity);
+      setTH(temphumid);
       setLoading(false);
     }
+
+    ambilData();
+    const interval = setInterval(() => {
+      ambilData();
+    }, 60000);
+    return () => clearInterval(interval);
   }, [value]);
 
   const Select = () => {
     return (
-      <div>
-        <select
-          className="select select-bordered bg-[#F2F2F2] dark:bg-base-100 text-base-100/60 dark:text-base-content select-sm w-full max-w-xs mb-2"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-        >
-          <option value={0}>Today</option>
-          <option value={1}>Yesterday</option>
-          <option value={2}>2 days ago</option>
-          <option value={3}>3 days ago</option>
-        </select>
-      </div>
+      <select
+        className="select select-bordered bg-[#F2F2F2] dark:bg-base-100 text-base-100/60 dark:text-base-content select-sm w-full max-w-xs flex-[2]"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      >
+        <option value={0}>Today</option>
+        <option value={1}>Yesterday</option>
+        <option value={2}>2 days ago</option>
+        <option value={3}>3 days ago</option>
+      </select>
     );
   };
 
@@ -151,13 +193,20 @@ export default function Stats() {
           <h3 className="text-lg font-bold mb-3 text-cyan-900 dark:text-stone-300">
             Measurement Record
           </h3>
-          <Select />
+          <div className="mb-2 flex flex-row gap-4 px-4 w-full items-center">
+            <Select />
+            <button
+              onClick={resetZoom}
+              className="btn btn-accent btn-outline btn-xs flex-1"
+            >
+              Reset Zoom
+            </button>
+          </div>
           {loading ? (
             <Loading />
           ) : (
             <div>
-              <Line options={options} data={temp} />
-              <Line options={options} data={humid} />
+              <Line options={options} data={th} ref={RefA} />
             </div>
           )}
         </label>
