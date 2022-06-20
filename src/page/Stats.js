@@ -29,12 +29,15 @@ ChartJS.register(
 
 export default function Stats() {
   const [temp, setTemp] = useState(null);
+  const [humid, setHumid] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(0);
 
   const { dark } = useContext(PagesContext);
 
-  const color = dark ? ["#d6d3d195", "rgba(168, 162, 158, 0.2)"] : ["#191D2495", "#191D2420"];
+  const color = dark
+    ? ["#d6d3d195", "rgba(168, 162, 158, 0.2)"]
+    : ["#191D2495", "#191D2420"];
 
   const options = {
     responsive: true,
@@ -91,12 +94,26 @@ export default function Stats() {
             data: data.map((i) => {
               return { x: i.time, y: i.temp };
             }),
+            borderColor: "#1FB2A6",
+            backgroundColor: "#1FB2A650",
+          },
+        ],
+      };
+      let humidity = await {
+        datasets: [
+          {
+            // data: [{x: 0, y:0}],
+            label: "Humidity (%)",
+            data: data.map((i) => {
+              return { x: i.time, y: i.humid };
+            }),
             borderColor: "#D926A9",
             backgroundColor: "#D926A950",
           },
         ],
       };
       setTemp(temperature);
+      setHumid(humidity);
       setLoading(false);
     }
   }, [value]);
@@ -135,7 +152,14 @@ export default function Stats() {
             Measurement Record
           </h3>
           <Select />
-          {loading ? <Loading /> : <Line options={options} data={temp} />}
+          {loading ? (
+            <Loading />
+          ) : (
+            <div>
+              <Line options={options} data={temp} />
+              <Line options={options} data={humid} />
+            </div>
+          )}
         </label>
       </label>
     </div>
