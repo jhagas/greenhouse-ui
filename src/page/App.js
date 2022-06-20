@@ -1,27 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { BsCloudMoonFill, BsSun } from "react-icons/bs";
 import { ImLeaf } from "react-icons/im";
+import { PagesContext } from "../supabase/context";
 import Info from "./Info";
 import Stats from "./Stats";
 
 function App() {
-  // check if localstorage with key "dark" exist
-  // if not (null), set to true. DARK MODE BY DEFAULT
-  if (localStorage.getItem("dark") === null) {
-    localStorage.setItem("dark", "true");
-  }
-
-  // initialize state, initial value is from localstoragewith key "dark"
-  // localstorage hold value in string, so using JSON.parse(value) to convert to boolean
-  const [dark, setDark] = useState(JSON.parse(localStorage.getItem("dark")));
-
-  // State can detect if its value is changing. If its changing, run this line
-  localStorage.setItem("dark", dark);
-
-  // Define the function for toogling dark state (dark mode)
-  const toogleDark = () => {
-    setDark(!dark);
-  };
+  const { toogleDark, dark } = useContext(PagesContext);
 
   return (
     <div className={dark ? "dark" : "light"}>

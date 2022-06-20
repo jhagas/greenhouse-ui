@@ -1,40 +1,13 @@
 import { useContext } from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { MdError, MdOutlineHighlight, MdThermostat } from "react-icons/md";
+import { MdOutlineHighlight, MdThermostat } from "react-icons/md";
 import { WiHumidity } from "react-icons/wi";
 import Moment from "react-moment";
 import { PagesContext } from "../supabase/context";
+import ErrorMessage from "./components/Error";
+import Loading from "./components/Load";
 
 export default function Info() {
   const { api, loading, fault } = useContext(PagesContext);
-
-  const Loading = () => {
-    return (
-      <div className="flex flex-col items-center justify-center m-4">
-        <AiOutlineLoading3Quarters
-          size="24px"
-          className="text-sky-800 dark:text-amber-500 animate-spin"
-        />
-        <p className="text-stone-700 dark:text-stone-300 text-xl animate-pulse font-bold my-2">
-          Loading Data...
-        </p>
-      </div>
-    );
-  };
-
-  const ErrorMessage = () => {
-    return (
-      <div className="flex flex-col items-center gap-2 max-w-md px-6">
-        <div className="text-red-600 animate-bounce">
-          <MdError size="40px" />
-        </div>
-        <p className="text-center text-gray-600 dark:text-gray-400">
-          There's some problem, please check your internet connection and
-          refresh the page.
-        </p>
-      </div>
-    );
-  };
 
   const Show = () => {
     return (
@@ -85,7 +58,7 @@ export default function Info() {
               Light Intensity
             </div>
             <div className="stat-value text-cyan-900 dark:text-stone-300">
-              {api.data[0].lux} Lux
+              {api.data[0].lux} lux
             </div>
           </div>
         </div>
@@ -98,15 +71,23 @@ export default function Info() {
   };
 
   return (
-    <div
-      className="flex flex-col w-full justify-center items-center "
-      style={{
-        height: "calc(100% - 4rem)",
-      }}
-    >
-      <div>
-        {!api.error ? loading ? <Loading /> : <Show /> : <ErrorMessage />}
+    <>
+      <div
+        className="flex flex-col w-full justify-center items-center "
+        style={{
+          height: "calc(100% - 6rem)",
+        }}
+      >
+        <div>
+          {!api.error ? loading ? <Loading /> : <Show /> : <ErrorMessage />}
+        </div>
       </div>
-    </div>
+      <div className="text-xs text-black dark:text-white opacity-40 h-4 text-center">
+        <p className="inline">© 2022 Jhagas H.W.. Licensed in </p>
+        <a className="inline text-cyan-900 dark:text-cyan-400 underline hover:brightness-75 hover:opacity-60 transition-all" href="https://github.com/jhagas/greenhouse-ui/">
+          MIT License
+        </a>
+      </div>
+    </>
   );
 }

@@ -10,6 +10,24 @@ export default function Context() {
   const [loading, setLoading] = useState(true);
   const [fault, setFault] = useState(false);
 
+  // check if localstorage with key "dark" exist
+  // if not (null), set to true. DARK MODE BY DEFAULT
+  if (localStorage.getItem("dark") === null) {
+    localStorage.setItem("dark", "true");
+  }
+
+  // initialize state, initial value is from localstoragewith key "dark"
+  // localstorage hold value in string, so using JSON.parse(value) to convert to boolean
+  const [dark, setDark] = useState(JSON.parse(localStorage.getItem("dark")));
+
+  // State can detect if its value is changing. If its changing, run this line
+  localStorage.setItem("dark", dark);
+
+  // Define the function for toogling dark state (dark mode)
+  const toogleDark = () => {
+    setDark(!dark);
+  };
+
   useEffect(() => {
     async function ambilData() {
       let { data, error } = await supabase
@@ -32,7 +50,7 @@ export default function Context() {
   }, []);
 
   return (
-    <PagesContext.Provider value={{ api, loading, fault }}>
+    <PagesContext.Provider value={{ api, loading, fault, toogleDark, dark }}>
       <App />
     </PagesContext.Provider>
   );
