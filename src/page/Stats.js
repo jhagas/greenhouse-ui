@@ -17,6 +17,7 @@ import moment from "moment";
 import Loading from "./components/Load";
 import { PagesContext } from "../supabase/context";
 import zoomPlugin from "chartjs-plugin-zoom";
+const { parseAsync } = require("json2csv");
 
 ChartJS.register(
   zoomPlugin,
@@ -49,10 +50,22 @@ export default function Stats() {
   const [th, setTH] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(0);
+  const [csv, setCSV] = useState(null);
 
   const RefA = useRef(null);
   const resetZoom = () => {
     RefA.current.resetZoom();
+  };
+
+  const downloadTxtFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([csv], {
+      type: "text/csv",
+    });
+    element.href = URL.createObjectURL(file);
+    element.download = "measurement.csv";
+    document.body.appendChild(element);
+    element.click();
   };
 
   const { dark } = useContext(PagesContext);
@@ -99,7 +112,7 @@ export default function Stats() {
         grid: {
           color: color[1],
         },
-        position: "left"
+        position: "left",
       },
       y1: {
         ticks: {
@@ -108,8 +121,8 @@ export default function Stats() {
         grid: {
           color: color[1],
         },
-        position: "right"
-      }
+        position: "right",
+      },
     },
   };
 
@@ -151,6 +164,12 @@ export default function Stats() {
           },
         ],
       };
+      const fields = ["time", "temp", "humid", "lux"];
+      const opts = { fields };
+
+      parseAsync(data, opts)
+        .then((csv) => setCSV(csv))
+        .catch((err) => console.error(err));
       setTH(temphumid);
       setLoading(false);
     }
@@ -206,7 +225,10 @@ export default function Stats() {
             <Loading />
           ) : (
             <div>
-              <Line options={options} data={th} ref={RefA} />
+              <div>
+                <Line options={options} data={th} ref={RefA} />
+              </div>
+              <button className="btn btn-primary btn-xs mt-2" onClick={downloadTxtFile}>Download MS. Excel Friendly CSV</button>
             </div>
           )}
         </label>
