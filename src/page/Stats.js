@@ -228,7 +228,7 @@ export default function Stats() {
               <div>
                 <Line options={options} data={th} ref={RefA} />
               </div>
-              <button className="btn btn-primary btn-xs mt-2" onClick={downloadTxtFile}>Download MS. Excel Friendly CSV</button>
+              <button className="btn btn-primary btn-xs mt-2" onClick={downloadTxtFile}>Download data as CSV (spreadsheet)</button>
             </div>
           )}
         </label>
