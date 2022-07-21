@@ -3,11 +3,14 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClientSecureBearSSL.h>
+#include <Wire.h>
+#include <BH1750.h>
 
+BH1750 lightMeter;
 ESP8266WiFiMulti WiFiMulti;
 
-const char fingerprint[] PROGMEM = "supabasefingerprint";
-const String apikey = "yoursupabaseapikey";
+const char fingerprint[] PROGMEM = "6D 08 1A C7 99 F1 8A 94 A8 B8 0C 52 8A 1D 44 FD 1C C1 ED 0F";
+const String apikey = "supabase-apikey";
 const int indicator = 14;
 
 #define DHTPIN 12 // Digital pin connected to the DHT sensor (GPIO pins)
@@ -19,11 +22,14 @@ void setup()
   Serial.begin(9600);
 
   dht.begin();
+  Wire.begin();
+  lightMeter.begin();
+  
   pinMode(indicator, OUTPUT);
   pinMode(2, OUTPUT);
 
   WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP("ssid", "pass");
+  WiFiMulti.addAP("ssid", "password");
 }
 
 unsigned long lastTime = 298000;
@@ -44,13 +50,20 @@ void loop()
   
   float h = dht.readHumidity();
   float t = dht.readTemperature(); // celcius
+  float lux = lightMeter.readLightLevel();
 
+  // Callibration Value (by linear regression)
+  t = 1.0323*t - 0.602; //jhagas
+  h = 0.8454*h + 14.635; //jhagas
+
+  Serial.print(h);
+  Serial.print("% | ");
+  Serial.print(t);
+  Serial.print(" C | ");
+  Serial.println(lux);
+  
   // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t))
-  {
-    dhtError();
-    return;
-  }
+  if (isnan(h) || isnan(t)) { dhtError(); return;}
   
   if (!isSend) {
     postError();
@@ -65,9 +78,9 @@ void loop()
   {
     lastTime = 0;
 
-    String httpReqData = "{\"temp\":" + String(t, 3) + ",\"humid\":" + String(h, 3) + ",\"lux\":\"0\"}";
+    String httpReqData = "{\"temp\":" + String(t, 1) + ",\"humid\":" + String(h, 1) + ",\"lux\":" + String(lux, 1) + "}";
 
-    if (https.begin(*client, "https://yourproject.supabase.co/rest/v1/yourtable"))
+    if (https.begin(*client, "https://yourproject.supabase.co/rest/v1/data"))
     {
       Serial.print("[HTTPS] beginning POST request...\n");
 
@@ -109,7 +122,6 @@ void loop()
       isSend = false;
     }
   }
-  Serial.println("Masuk");
 }
 
 void postSuccess()
