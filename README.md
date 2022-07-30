@@ -4,20 +4,16 @@ Here is step-by-step tutorial (Link to another online article) to setup your own
 
 ## Hardware Required
 
-- 3, 10 kilo ohm resistor
+- 1, 10 kilo ohm resistor
 - 1, 1 kilo ohm resistor
 - 1, ESP8266 (LoLiN NodeMCU v3)
 - Stable Wi-Fi connection (for ESP8266 to send the data)
 - Red LED
-- USB type-A to USB cable data
-- DHT22 Sensor (if you using the module not a standalone device, you only need 2 10k resistor)
-- LDR (Light Dependent Resistor)
+- USB type-A to microUSB cable data
+- DHT22 Sensor (if you using the module, not a standalone device, you don't 10k resistor)
+- BH1750 (Illuminance sensor)
 - Phone Charger
 - Laptop or Desktop with internet connection
-
-## LDR Preparation
-
-I can't ensure all the LDR's available out there build exactly the same. So calibration step should be taken. Tutorial for that can be seen here: [LDR Calibration for Arduino](https://www.allaboutcircuits.com/projects/design-a-luxmeter-using-a-light-dependent-resistor/).
 
 ## Supabase Preparation
 
