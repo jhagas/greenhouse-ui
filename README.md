@@ -8,9 +8,10 @@ Here is step-by-step tutorial (Link to another online article) to setup your own
   - [Table of Contents](#table-of-contents)
   - [Final Looks (on project board)](#final-looks-on-project-board)
   - [Hardware Required](#hardware-required)
-  - [Supabase Preparation](#supabase-preparation)
-  - [Arduino IDE](#arduino-ide)
-  - [Web User Interface and Netlify deploy](#web-user-interface-and-netlify-deploy)
+  - [How to Start (Quick Start Guide)](#how-to-start-quick-start-guide)
+    - [Supabase Preparation](#supabase-preparation)
+    - [Arduino IDE](#arduino-ide)
+    - [Web User Interface and Netlify deploy](#web-user-interface-and-netlify-deploy)
   - [Laporan Resmi Akuisisi Data Digital (Written in Indonesian)](#laporan-resmi-akuisisi-data-digital-written-in-indonesian)
   - [Thank You](#thank-you)
 
@@ -31,15 +32,19 @@ Here is step-by-step tutorial (Link to another online article) to setup your own
 - Phone Charger
 - Laptop or Desktop with internet connection
 
-## Supabase Preparation
+## How to Start (Quick Start Guide)
+
+For starting, a bit of Arduino (or C++) knowledge is required. Also you need to understand a little bit about deploying (or maybe modifying) react app, for deploying we will be using Netlify. Sufficient understanding of Javascript also required.
+
+### Supabase Preparation
 
 TODO
 
-## Arduino IDE
+### Arduino IDE
 
 TODO
 
-## Web User Interface and Netlify deploy
+### Web User Interface and Netlify deploy
 
 TODO
 
