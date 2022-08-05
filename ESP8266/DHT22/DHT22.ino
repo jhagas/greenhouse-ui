@@ -20,7 +20,6 @@ DHT dht(DHTPIN, DHTTYPE);
 void setup()
 {
   Serial.begin(9600);
-
   dht.begin();
   Wire.begin();
   lightMeter.begin();
@@ -38,16 +37,16 @@ bool isSend = true;
 
 void loop()
 {
-  while (WiFiMulti.run() != WL_CONNECTED)
+  if (WiFiMulti.run() != WL_CONNECTED)
   {
     wifiConnecting();
+    return;
   }
   
   std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
   client->setFingerprint(fingerprint);
   HTTPClient https;
 
-  
   float h = dht.readHumidity();
   float t = dht.readTemperature(); // celcius
   float lux = lightMeter.readLightLevel();
@@ -63,7 +62,8 @@ void loop()
   Serial.println(lux);
   
   // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t)) { dhtError(); return;}
+  if ( isnan(h) || isnan(t) ) { dhtError(); return;}
+  if ( lux < 0 ) { bhError(); return;}
   
   if (!isSend) {
     postError();
@@ -154,6 +154,22 @@ void dhtError()
   delay(1000);
   digitalWrite(indicator, LOW);
   delay(1000);
+}
+
+void bhError()
+{
+  digitalWrite(indicator, HIGH);
+  delay(750);
+  digitalWrite(indicator, LOW);
+  delay(1000);
+  digitalWrite(indicator, HIGH);
+  delay(1500);
+  digitalWrite(indicator, LOW);
+  delay(1000);
+  digitalWrite(indicator, HIGH);
+  delay(750);
+  digitalWrite(indicator, LOW);
+  delay(3000);
 }
 
 void wifiConnecting()

@@ -19,11 +19,48 @@ export default function Info() {
               (fault ? "bg-red-600" : "bg-green-600")
             }
           />
-          <p className="text-xs opacity-80">
+          <div className="text-xs flex flex-row gap-1 items-center">
             {fault
-              ? "Please check your device"
-              : "Monitoring Device is fully functional"}
-          </p>
+              ? <p className="opacity-80">Please check your device</p>
+              : <p className="opacity-80">Monitoring Device is fully functional</p>}
+            {fault && (
+              <div className="dropdown dropdown-end">
+                <label
+                  tabIndex="0"
+                  className="btn btn-circle btn-ghost btn-xs text-info"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="w-4 h-4 stroke-current"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </label>
+                <div
+                  tabIndex="0"
+                  className="compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                >
+                  <div className="card-body">
+                    <h2 className="card-title">
+                      Device is not sending data in 5 minutes
+                    </h2>
+                    <p>
+                      It happens when the device is inactive (not powered) or
+                      not connected to the network or maybe there are errors in
+                      sensors (check device LED blink)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className="stats shadow-md bg-gray-200 dark:bg-slate-800 stats-vertical lg:stats-horizontal mb-2">
           <div className="stat">
@@ -43,7 +80,7 @@ export default function Info() {
               <WiHumidity size="40px" />
             </div>
             <div className="stat-title text-stone-700 dark:text-stone-300">
-              Humidity
+              Relative Humidity
             </div>
             <div className="stat-value text-cyan-900 dark:text-stone-300">
               {api.data[0].humid}%
@@ -55,10 +92,10 @@ export default function Info() {
               <MdOutlineHighlight size="32px" />
             </div>
             <div className="stat-title text-stone-700 dark:text-stone-300">
-              Light Intensity
+              Illuminance
             </div>
             <div className="stat-value text-cyan-900 dark:text-stone-300">
-              {api.data[0].lux} lux
+              {api.data[0].lux} lx
             </div>
           </div>
         </div>
@@ -83,9 +120,12 @@ export default function Info() {
         </div>
       </div>
       <div className="text-xs text-black dark:text-white opacity-40 h-4 text-center">
-        <p className="inline">© 2022 Jhagas H.W.. Licensed in </p>
-        <a className="inline text-cyan-900 dark:text-cyan-400 underline hover:brightness-75 hover:opacity-60 transition-all" href="https://github.com/jhagas/greenhouse-ui/">
-          MIT License
+        <p className="inline">© 2022 Jhagas, MIT License. </p>
+        <a
+          className="inline text-cyan-900 dark:text-cyan-400 underline hover:brightness-75 hover:opacity-60 transition-all"
+          href="https://github.com/jhagas/greenhouse-ui/"
+        >
+          GitHub Page
         </a>
       </div>
     </>

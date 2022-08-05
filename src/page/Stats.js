@@ -11,16 +11,14 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabase";
 import moment from "moment";
 import Loading from "./components/Load";
 import { PagesContext } from "../supabase/context";
-import zoomPlugin from "chartjs-plugin-zoom";
 const { parseAsync } = require("json2csv");
 
 ChartJS.register(
-  zoomPlugin,
   TimeScale,
   LinearScale,
   PointElement,
@@ -30,32 +28,11 @@ ChartJS.register(
   Legend
 );
 
-const zoomOptions = {
-  pan: {
-    enabled: true,
-    mode: "xy",
-  },
-  zoom: {
-    wheel: {
-      enabled: true,
-    },
-    pinch: {
-      enabled: true,
-    },
-    mode: "xy",
-  },
-};
-
 export default function Stats() {
-  const [th, setTH] = useState(null);
+  const [ds, setDs] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(0);
   const [csv, setCSV] = useState(null);
-
-  const RefA = useRef(null);
-  const resetZoom = () => {
-    RefA.current.resetZoom();
-  };
 
   const downloadTxtFile = () => {
     const element = document.createElement("a");
@@ -87,7 +64,6 @@ export default function Stats() {
     },
     stacked: false,
     plugins: {
-      zoom: zoomOptions,
       legend: {
         labels: {
           color: color[0],
@@ -111,18 +87,6 @@ export default function Stats() {
         },
       },
       y: {
-        ticks: {
-          color: "#1FB2A6",
-        },
-        grid: {
-          color: color[1],
-        },
-        position: "left",
-      },
-      y1: {
-        ticks: {
-          color: "#D926A9",
-        },
         grid: {
           color: color[1],
         },
@@ -145,37 +109,61 @@ export default function Stats() {
         .gte("time", `${date}`)
         .lt("time", `${datetom}`)
         .order("time", { ascending: true });
-      let temphumid = await {
-        datasets: [
-          {
-            // data: [{x: 0, y:0}],
-            label: "Temperature (°C)",
-            data: data.map((i) => {
-              return { x: i.time, y: i.temp };
-            }),
-            borderColor: "#1FB2A6",
-            backgroundColor: "#1FB2A650",
-            yAxisID: "y",
-          },
-          {
-            // data: [{x: 0, y:0}],
-            label: "Humidity (%)",
-            data: data.map((i) => {
-              return { x: i.time, y: i.humid };
-            }),
-            borderColor: "#D926A9",
-            backgroundColor: "#D926A950",
-            yAxisID: "y1",
-          },
-        ],
-      };
+
+      let dsVar = await [
+        {
+          datasets: [
+            {
+              // data: [{x: 0, y:0}],
+              label: "Temperature (°C)",
+              short: "T (°C)",
+              data: data.map((i) => {
+                return { x: i.time, y: i.temp };
+              }),
+              borderColor: "#1FB2A6",
+              backgroundColor: "#1FB2A650",
+            },
+          ],
+        },
+
+        {
+          datasets: [
+            {
+              // data: [{x: 0, y:0}],
+              label: "Relative Humidity (%)",
+              short: "RH (%)",
+              data: data.map((i) => {
+                return { x: i.time, y: i.humid };
+              }),
+              borderColor: "#D926A9",
+              backgroundColor: "#D926A950",
+            },
+          ],
+        },
+
+        {
+          datasets: [
+            {
+              // data: [{x: 0, y:0}],
+              label: "Illuminance (lx)",
+              short: "Ev (lx)",
+              data: data.map((i) => {
+                return { x: i.time, y: i.lux };
+              }),
+              borderColor: "#D926A9",
+              backgroundColor: "#D926A950",
+            },
+          ],
+        },
+      ];
+
       const fields = ["time", "temp", "humid", "lux"];
       const opts = { fields };
 
       parseAsync(data, opts)
         .then((csv) => setCSV(csv))
         .catch((err) => console.error(err));
-      setTH(temphumid);
+      setDs(dsVar);
       setLoading(false);
     }
 
@@ -189,7 +177,7 @@ export default function Stats() {
   const Select = () => {
     return (
       <select
-        className="select select-bordered bg-[#F2F2F2] dark:bg-base-100 text-base-100/60 dark:text-base-content select-sm w-full max-w-xs flex-[2]"
+        className="select select-bordered bg-[#F2F2F2] dark:bg-base-100 text-base-100/60 dark:text-base-content select-sm w-full max-w-xs"
         value={value}
         onChange={(event) => setValue(event.target.value)}
       >
@@ -214,30 +202,45 @@ export default function Stats() {
         className="modal bg-black/70 dark:bg-black/50 cursor-pointer"
       >
         <label className="modal-box bg-[#F2F2F2] dark:bg-base-100 relative">
-          <h3 className="text-lg font-bold mb-3 text-cyan-900 dark:text-stone-300">
-            Measurement Record
-          </h3>
-          <div className="mb-2 flex flex-row gap-4 px-4 w-full items-center">
-            <Select />
-            <button
-              onClick={resetZoom}
-              className="btn btn-accent btn-outline btn-xs flex-1"
-            >
-              Reset Zoom
-            </button>
-          </div>
           {loading ? (
             <Loading />
           ) : (
             <div>
+              <div className="mb-4 flex flex-col gap-2 px-6 w-full items-center">
+                <h3 className="text-xl font-bold text-cyan-900 dark:text-stone-300">
+                  DATA RECORDS
+                </h3>
+                <Select />
+              </div>
               <div>
-                <Line options={options} data={th} ref={RefA} />
+                <div className="carousel w-full">
+                  {ds.map((ds, i) => {
+                    return (
+                      <Line
+                        options={options}
+                        key={i}
+                        id={"item" + i}
+                        data={ds}
+                        className="carousel-item w-full"
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex justify-center w-full py-2 gap-3">
+                  {ds.map((ds, i) => {
+                    return (
+                      <a href={"#item" + i} key={i} className="btn btn-sm px-4 normal-case">
+                        {ds.datasets[0].short}
+                      </a>
+                    );
+                  })}
+                </div>
               </div>
               <button
                 className="btn btn-primary btn-xs mt-2"
                 onClick={downloadTxtFile}
               >
-                Download data as CSV (spreadsheet)
+                Download data as CSV
               </button>
             </div>
           )}
