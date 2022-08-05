@@ -150,8 +150,8 @@ export default function Stats() {
               data: data.map((i) => {
                 return { x: i.time, y: i.lux };
               }),
-              borderColor: "#D926A9",
-              backgroundColor: "#D926A950",
+              borderColor: "#6419E6",
+              backgroundColor: "#6419E650",
             },
           ],
         },
