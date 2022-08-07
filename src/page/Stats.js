@@ -14,8 +14,8 @@ import { Line } from "react-chartjs-2";
 import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabase";
 import moment from "moment";
-import Loading from "./components/Load";
 import { PagesContext } from "../supabase/context";
+import ErrLoadChain from "./components/ErrLoadChain";
 const { parseAsync } = require("json2csv");
 
 ChartJS.register(
@@ -33,6 +33,7 @@ export default function Stats() {
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(0);
   const [csv, setCSV] = useState(null);
+  const [error, setError] = useState(null);
 
   const downloadTxtFile = () => {
     const element = document.createElement("a");
@@ -45,7 +46,7 @@ export default function Stats() {
     element.click();
   };
 
-  const { dark } = useContext(PagesContext);
+  const { dark, status } = useContext(PagesContext);
 
   const color = dark
     ? ["#d6d3d195", "rgba(168, 162, 158, 0.2)"]
@@ -103,7 +104,7 @@ export default function Stats() {
     const datetom = momentval.add(1, "day").format("YYYY-MM-DD 17:00:00");
 
     async function ambilData() {
-      let { data } = await supabase
+      let { data, error } = await supabase
         .from("data")
         .select("*")
         .gte("time", `${date}`)
@@ -164,15 +165,18 @@ export default function Stats() {
         .then((csv) => setCSV(csv))
         .catch((err) => console.error(err));
       setDs(dsVar);
+      setError(error);
       setLoading(false);
     }
 
-    ambilData();
-    const interval = setInterval(() => {
+    if (status) {
       ambilData();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [value]);
+      const interval = setInterval(() => {
+        ambilData();
+      }, 20000);
+      return () => clearInterval(interval);
+    }
+  }, [value, status]);
 
   const Select = () => {
     return (
@@ -189,11 +193,53 @@ export default function Stats() {
     );
   };
 
+  const Isi = () => (
+    <div>
+      <div className="mb-4 flex flex-col gap-2 px-6 w-full items-center">
+        <h3 className="text-xl font-bold text-cyan-900 dark:text-stone-300">
+          DATA RECORDS
+        </h3>
+        <Select />
+      </div>
+      <div>
+        <div className="carousel w-full">
+          {ds.map((ds, i) => {
+            return (
+              <Line
+                options={options}
+                key={i}
+                id={"item" + i}
+                data={ds}
+                className="carousel-item w-full"
+              />
+            );
+          })}
+        </div>
+        <div className="flex justify-center w-full py-2 gap-3">
+          {ds.map((ds, i) => {
+            return (
+              <a
+                href={"#item" + i}
+                key={i}
+                className="btn btn-sm px-4 normal-case"
+              >
+                {ds.datasets[0].short}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+      <button className="btn btn-primary btn-xs mt-2" onClick={downloadTxtFile}>
+        Download data as CSV
+      </button>
+    </div>
+  );
+
   return (
     <div className="tooltip tooltip-left" data-tip="Full stats">
       <label htmlFor="my-modal-3">
         <div className="hover:text-purple-600 cursor-pointer transition-colors duration-300 dark:hover:text-yellow-300 text-gray-600 dark:text-white">
-          <IoStatsChart size="24px" />
+          <IoStatsChart size="20px" />
         </div>
       </label>
       <input type="checkbox" id="my-modal-3" className="modal-toggle" />
@@ -202,48 +248,7 @@ export default function Stats() {
         className="modal bg-black/70 dark:bg-black/50 cursor-pointer"
       >
         <label className="modal-box bg-[#F2F2F2] dark:bg-base-100 relative">
-          {loading ? (
-            <Loading />
-          ) : (
-            <div>
-              <div className="mb-4 flex flex-col gap-2 px-6 w-full items-center">
-                <h3 className="text-xl font-bold text-cyan-900 dark:text-stone-300">
-                  DATA RECORDS
-                </h3>
-                <Select />
-              </div>
-              <div>
-                <div className="carousel w-full">
-                  {ds.map((ds, i) => {
-                    return (
-                      <Line
-                        options={options}
-                        key={i}
-                        id={"item" + i}
-                        data={ds}
-                        className="carousel-item w-full"
-                      />
-                    );
-                  })}
-                </div>
-                <div className="flex justify-center w-full py-2 gap-3">
-                  {ds.map((ds, i) => {
-                    return (
-                      <a href={"#item" + i} key={i} className="btn btn-sm px-4 normal-case">
-                        {ds.datasets[0].short}
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-              <button
-                className="btn btn-primary btn-xs mt-2"
-                onClick={downloadTxtFile}
-              >
-                Download data as CSV
-              </button>
-            </div>
-          )}
+          <ErrLoadChain comp={Isi} err={error} loading={loading} />
         </label>
       </label>
     </div>

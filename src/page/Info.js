@@ -3,8 +3,7 @@ import { MdOutlineHighlight, MdThermostat } from "react-icons/md";
 import { WiHumidity } from "react-icons/wi";
 import Moment from "react-moment";
 import { PagesContext } from "../supabase/context";
-import ErrorMessage from "./components/Error";
-import Loading from "./components/Load";
+import ErrLoadChain from "./components/ErrLoadChain";
 
 export default function Info() {
   const { api, loading, fault } = useContext(PagesContext);
@@ -116,7 +115,7 @@ export default function Info() {
         }}
       >
         <div>
-          {!api.error ? loading ? <Loading /> : <Show /> : <ErrorMessage />}
+          <ErrLoadChain comp={Show} err={api.error} loading={loading} />
         </div>
       </div>
       <div className="text-xs text-black dark:text-white opacity-40 h-4 text-center">

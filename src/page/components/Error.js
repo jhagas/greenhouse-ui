@@ -7,7 +7,7 @@ export default function ErrorMessage() {
         <MdError size="40px" />
       </div>
       <p className="text-center text-gray-600 dark:text-gray-400">
-        There's some problem, please check your internet connection and refresh
+        There's some problem, please check your internet connection/database and refresh
         the page.
       </p>
     </div>

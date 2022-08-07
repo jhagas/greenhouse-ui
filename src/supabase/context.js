@@ -9,6 +9,7 @@ export default function Context() {
   const [api, setApi] = useState(0);
   const [loading, setLoading] = useState(true);
   const [fault, setFault] = useState(false);
+  const [status, setStatus] = useState(true);
 
   // check if localstorage with key "dark" exist
   // if not (null), set to true. DARK MODE BY DEFAULT
@@ -38,19 +39,32 @@ export default function Context() {
       setApi({ data, error });
       setLoading(false);
       if (new Date() - new Date(data[0].time) > 320000) {
-        setFault(true)
+        setFault(true);
       }
     }
-    ambilData();
 
-    const interval = setInterval(() => {
+    function changeStatus() {
+      setStatus(navigator.onLine);
+    }
+    window.addEventListener("online", changeStatus);
+    window.addEventListener("offline", changeStatus);
+    
+    if (status) {
       ambilData();
-    }, 20000);
-    return () => clearInterval(interval);
-  }, []);
+      
+      const interval = setInterval(() => {
+        ambilData();
+      }, 20000);
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("online", changeStatus);
+        window.removeEventListener("offline", changeStatus);
+      };
+    }
+  }, [status]);
 
   return (
-    <PagesContext.Provider value={{ api, loading, fault, toogleDark, dark }}>
+    <PagesContext.Provider value={{ api, loading, fault, toogleDark, dark, status }}>
       <App />
     </PagesContext.Provider>
   );
