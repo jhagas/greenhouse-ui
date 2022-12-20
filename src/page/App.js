@@ -1,13 +1,17 @@
-import { useContext } from "react";
+import { useState } from "react";
 import { BsCloudMoonFill, BsSun } from "react-icons/bs";
 import { ImLeaf } from "react-icons/im";
-import { PagesContext } from "../supabase/context";
-import Control from "./Control";
 import Info from "./Info";
-import Stats from "./Stats";
 
 function App() {
-  const { toogleDark, dark } = useContext(PagesContext);
+  if (localStorage.getItem("dark") === null) {
+    localStorage.setItem("dark", "true");
+  }
+  const [dark, setDark] = useState(JSON.parse(localStorage.getItem("dark")));
+  localStorage.setItem("dark", dark);
+  const toogleDark = () => {
+    setDark(!dark);
+  };
 
   return (
     <div className={dark ? "dark" : "light"}>
@@ -16,12 +20,10 @@ function App() {
           <div className="flex flex-row items-center dark:text-yellow-300 text-sky-800 transition-colors duration-300">
             <ImLeaf size="20px" />
             <p className="sm:text-lg text-md transition font-semibold ml-2 text-gray-700 dark:text-stone-100">
-              Grh.se
+              Sensor Monitoring
             </p>
           </div>
           <div className="flex flex-row items-center gap-6">
-            <Control />
-            <Stats />
             <div className="tooltip tooltip-left" data-tip="Dark toogle">
               <div
                 onClick={toogleDark}
@@ -33,6 +35,15 @@ function App() {
           </div>
         </div>
         <Info />
+        <div className="text-xs text-black dark:text-white opacity-40 h-4 text-center">
+          <p className="inline">© 2022 Jhagas Hana Winaya, MIT License. </p>
+          <a
+            className="inline text-cyan-900 dark:text-cyan-400 underline hover:brightness-75 hover:opacity-60 transition-all"
+            href="https://github.com/jhagas/greenhouse-ui/"
+          >
+            GitHub Page
+          </a>
+        </div>
       </div>
     </div>
   );
