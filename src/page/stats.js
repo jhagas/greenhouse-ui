@@ -10,11 +10,12 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import moment from "moment";
-import { useFilter, useSelect } from "react-supabase";
+import { useFilter, useSelect, useSubscription } from "react-supabase";
 import { useState } from "react";
 import { useEffect } from "react";
 import Loading from "./components/Load";
 import ErrorMessage from "./components/Error";
+import { parse } from "json2csv";
 
 ChartJS.register(
   TimeScale,
@@ -42,7 +43,6 @@ export default function Stats({ dark }) {
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
     }
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -107,7 +107,17 @@ export default function Stats({ dark }) {
     [date]
   );
 
-  const [{ data, error }] = useSelect("data", { filter });
+  const [{ data, error }, reexecute] = useSelect("data", { filter });
+
+  useSubscription(
+    () => {
+      reexecute();
+    },
+    {
+      event: "INSERT",
+      table: "data",
+    }
+  );
 
   useEffect(() => {
     const momentval = moment(moment().format("YYYY-MM-DD"))
@@ -127,12 +137,12 @@ export default function Stats({ dark }) {
 
   if (data.length > 0) {
     data.forEach((data, index) => {
-      let time = data.time;
+      const time = data.time;
       if (index === 0) {
         data.data.forEach((sensor) => {
           ds.push([{ x: time, y: sensor.value }]);
-          let name = sensor.name;
-          let unit = sensor.unit.length === 0 ? "" : " (" + sensor.unit + ")";
+          const name = sensor.name;
+          const unit = sensor.unit.length === 0 ? "" : " (" + sensor.unit + ")";
           labels.push(name + unit);
         });
       } else {
@@ -157,6 +167,38 @@ export default function Stats({ dark }) {
     });
   }
 
+  function downloadCSV() {
+    const text = [];
+    let filename;
+
+    data.forEach((data) => {
+      let time = moment(data.time).format("D/MM/YYYY hh:mm:ss");
+      filename = moment(data.time).format("D/MM/YYYY")
+      let parted = { time };
+
+      data.data.forEach((sensor) => {
+        const key =
+          sensor.name +
+          (sensor.unit.length === 0 ? "" : " (" + sensor.unit + ")");
+        parted[key] = sensor.value;
+      });
+      text.push(parted);
+    });
+
+    const csv = parse(text);
+
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(csv)
+    );
+    element.setAttribute("download", `Data ${filename}.csv`);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
   return (
     <>
       <div
@@ -166,18 +208,23 @@ export default function Stats({ dark }) {
         }}
       >
         <div className="p-2 w-full flex flex-col items-center justify-center gap-3">
-          <select
-            className="select select-bordered bg-[#F2F2F2] dark:bg-slate-800 text-base-700/60 dark:text-base-300 select-sm w-full max-w-xs"
-            value={value}
-            onChange={(event) => {
-              setValue(event.target.value);
-            }}
-          >
-            <option value={0}>Today</option>
-            <option value={1}>Yesterday</option>
-            <option value={2}>2 days ago</option>
-            <option value={3}>3 days ago</option>
-          </select>
+          <div className="flex flex-row gap-3 items-center justify-center">
+            <select
+              className="select select-bordered bg-[#F2F2F2] dark:bg-slate-800 text-base-700/60 dark:text-base-300 select-sm w-full max-w-[15rem]"
+              value={value}
+              onChange={(event) => {
+                setValue(event.target.value);
+              }}
+            >
+              <option value={0}>Today</option>
+              <option value={1}>Yesterday</option>
+              <option value={2}>2 days ago</option>
+              <option value={3}>3 days ago</option>
+            </select>
+            <button className="btn btn-primary btn-xs" onClick={downloadCSV}>
+              Download Data
+            </button>
+          </div>
           <div className="btn-group justify-center items-center">
             {labels.map((label, index) => {
               const cn = dark
