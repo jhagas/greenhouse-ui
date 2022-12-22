@@ -58,13 +58,13 @@ Here is step-by-step tutorial (Link to another online article) to setup your own
 ]
 ```
 
-Key `name` dapat diisi dengan bebas. Pada hubungan dengan ikon yang ditampilkan pada web tipe sensor yang didukung saat ini adalah : 
+`name` key can be any string, and will be displayed in Web UI. Currently supported sensor type (will determine the icon in Web UI) are : 
 
-- `""` (Kosongi tipe dengan tanda petik bila tipe belum didukung)
-- `"temperature"` Untuk sensor yang mengukur temperatur
-- `"relativeHumidity"` Untuk sensor yang mengukur kelembapan relatif
-- `"illuminance"` Untuk sensor yang mengukur illuminansi
-- `"ph"` Untuk sensor yang mengukur nilai pH
+- `""` (empty the string if you sensor type not currently supported)
+- `"temperature"` for temperature sensor
+- `"relativeHumidity"` for relative humidity sensor
+- `"illuminance"` for illuminance (ambient light) sensor
+- `"ph"` for any sensor that measure pH
 
 ## How to Start (Quick Start Guide)
 
