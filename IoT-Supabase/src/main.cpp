@@ -1,36 +1,47 @@
-#include "DHT.h"
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <ESP8266HTTPClient.h>
-#include <Wire.h>
-#include <BH1750.h>
 #include "ArduinoJson.h"
 
-#define DHTPIN 12
-#define DHTTYPE DHT22
+// library sensor
+#include "DHT.h"
+#include <Wire.h>
+#include <BH1750.h>
 
-const String url = "https://pmtntcvniacqbzuafytw.supabase.co";
-const String apikey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtdG50Y3ZuaWFjcWJ6dWFmeXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzEzNTgyOTUsImV4cCI6MTk4NjkzNDI5NX0.HbRBJwbgQgZc1xhnoC8z1nRsF7_8YtX-p2ZChtCVXKM";
+// 'supabase url' dan 'anon key' yang didapat dari laman supabase
+const String url = "supabase_url";
+const String apikey = "supabase_anon_key";
+
 const String table = "data";
 const int httpsPort = 443;
 
-const char *ssid = "tirta";
-const char *password = "tirtawana";
+// masukkan nama wifi dan password yang ingin disambungkan
+const char *ssid = "wifi_ssid";
+const char *password = "wifi_password";
 
+// Memulai library untuk sensor
+#define DHTPIN 12
+#define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 BH1750 lightMeter;
+
 HTTPClient https;
 WiFiClientSecure client;
 
-unsigned long lastTime = 300000;
-unsigned long timeDelay = 300000;
-const int res = 5000;
+unsigned long timeDelay = 300000; // berapa milidetik jeda tiap pengiriman data (5 menit)
+unsigned long lastTime = timeDelay;
+const int res = 5000; // refresh rate perangkat (5 detik)
 bool isSend = true;
 
-const int jumlahSensor = 4;
-String name[jumlahSensor] = {"Suhu", "Kelembapan Relatif", "Iluminansi", "pH Tanah"};
-String type[jumlahSensor] = {"temperature", "relativeHumidity", "illuminance", "ph"};
-String unit[jumlahSensor] = {"°C", "%", "Lux", ""};
+// tambahkan/kurangi sensor sesuai kebutuhan anda
+const int jumlahSensor = 3;
+// nama sensor untuk ditampilkan pada web, isi pada array harus sesuai jumlah sensor
+String name[jumlahSensor] = {"Suhu", "Kelembapan Relatif", "Iluminansi"};
+// tipe sensor untuk ikon web, isi pada array harus sesuai jumlah sensor
+String type[jumlahSensor] = {"temperature", "relativeHumidity", "illuminance"};
+// satuan data sensor untuk tampilan web, isi pada array harus sesuai jumlah sensor
+String unit[jumlahSensor] = {"°C", "%", "Lux"};
+// nilai data sensor
 float value[jumlahSensor];
 
 int httpCode;
@@ -38,8 +49,9 @@ int httpCode;
 void setup()
 {
   client.setInsecure();
-
   Serial.begin(9600);
+
+  // memulai library untuk sensor
   dht.begin();
   Wire.begin();
   lightMeter.begin();
@@ -55,10 +67,11 @@ void setup()
 void loop()
 {
   unsigned long t1 = millis();
+
+  // masukkan nilai sensor, jumlah masukan harus sesuai jumlah sensor (dalam contoh ini 3)
   value[0] = dht.readTemperature();
   value[1] = dht.readHumidity();
   value[2] = lightMeter.readLightLevel();
-  value[3] = 30.5;
 
   if (lastTime >= timeDelay)
   {
@@ -112,7 +125,7 @@ void loop()
     lastTime = timeDelay;
   else
   {
-    int elapsed = res - (t2-t1);
+    int elapsed = res - (t2 - t1);
     lastTime += elapsed;
     delay(elapsed);
   }

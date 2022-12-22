@@ -118,7 +118,7 @@ export default function Info() {
                     {data.name}
                   </div>
                   <div className="stat-value text-cyan-900 dark:text-stone-300">
-                    {data.value + " " + data.unit}
+                    {data.value.toFixed(1) + " " + data.unit}
                   </div>
                 </div>
               ))}
