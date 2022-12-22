@@ -210,7 +210,7 @@ export default function Stats({ dark }) {
         <div className="p-2 w-full flex flex-col items-center justify-center gap-3">
           <div className="flex flex-row gap-3 items-center justify-center">
             <select
-              className="select select-bordered bg-[#F2F2F2] dark:bg-slate-800 text-base-700/60 dark:text-base-300 select-sm w-full max-w-[15rem]"
+              className="select select-bordered bg-[#F2F2F2] dark:bg-slate-800 text-base-700 dark:text-base-300 select-sm w-full max-w-[12rem]"
               value={value}
               onChange={(event) => {
                 setValue(event.target.value);
@@ -249,8 +249,8 @@ export default function Stats({ dark }) {
         </div>
         <div
           style={{
-            width: windowDimensions.width - 100 + "px",
-            height: windowDimensions.height - 250 + "px",
+            width: windowDimensions.width - 50 + "px",
+            height: windowDimensions.height - 225 + "px",
           }}
         >
           <div className="flex flex-col items-center justify-center h-full w-full">
