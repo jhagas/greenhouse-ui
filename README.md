@@ -1,10 +1,10 @@
-# Greenhouse Monitoring System with ESP8266, Supabase, React (Web UI)
+# Greenhouse Monitoring System with ESP8266, Supabase, React
 
 Here is step-by-step tutorial (Link to another online article) to setup your own web-based greenhouse monitoring system. Web user interface is made with React (bootstrapped with [Create React App](./REACT.md)), [TailwindCSS](https://tailwindcss.com/docs/guides/create-react-app) and [DaisyUI](https://daisyui.com/docs/install/). You can follow those link to learn more, but as always the included project is more than enough to get you start monitoring your greenhouse.
 
 
 ## Table of Contents
-- [Greenhouse Monitoring System with ESP8266, Supabase, React (Web UI)](#greenhouse-monitoring-system-with-esp8266-supabase-react-web-ui)
+- [Greenhouse Monitoring System with ESP8266, Supabase, React](#greenhouse-monitoring-system-with-esp8266-supabase-react)
   - [Table of Contents](#table-of-contents)
   - [Final Looks (on project board)](#final-looks-on-project-board)
   - [Hardware Required](#hardware-required)
@@ -25,12 +25,11 @@ Here is step-by-step tutorial (Link to another online article) to setup your own
 - 1, 1 kilo ohm resistor
 - 1, ESP8266 (LoLiN NodeMCU v3)
 - Stable Wi-Fi connection (for ESP8266 to send the data)
-- Red LED
-- USB type-A to microUSB cable data
-- DHT22 Sensor (if you using the module, not a standalone device, you don't 10k resistor)
-- BH1750 (Illuminance sensor)
-- Phone Charger
-- Laptop or Desktop with internet connection
+- 1, Red LED
+- 1, USB type-A to microUSB cable data
+- 1, DHT22 Sensor (if you using the module, not a standalone device, you don't need 10k resistor)
+- 1, BH1750 (Illuminance/ambient light sensor)
+- 1, Phone Charger
 
 ## JSON Structure in Database
 
