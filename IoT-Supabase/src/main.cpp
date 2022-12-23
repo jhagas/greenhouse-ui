@@ -78,6 +78,7 @@ void loop()
     lastTime = 0;
     String httpReqData = "";
     StaticJsonDocument<1024> doc;
+    doc["refresh"] = timeDelay;
     JsonArray data = doc.createNestedArray("data");
 
     for (int i = 0; i < jumlahSensor; i++)
@@ -126,6 +127,8 @@ void loop()
   else
   {
     int elapsed = res - (t2 - t1);
+    if (elapsed < 0)
+      return;
     lastTime += elapsed;
     delay(elapsed);
   }

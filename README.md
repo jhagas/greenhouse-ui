@@ -72,8 +72,9 @@ Make new project and then make new table with the following SQL Code
 
 ```sql
 create table data (
-  time timestamp with time zone default timezone('utc'::text, now()) not null,
-  data jsonb
+  time timestamp with time zone default timezone('utc'::text, now()) not null PRIMARY KEY,
+  data jsonb,
+  refresh int4
 );
 
 alter publication supabase_realtime add table data;
@@ -83,7 +84,7 @@ Then write down your `supabase url` and `anon key`
 
 ### NodeMCU 1.0 (ESP-12E Module) / ESP8266, PlatformIO Setup 
 
-1. Clone this repository and import `IoT-supabase` folder to PlatformIO. Then select NodeMCU 1.0 (ESP-12E Module) board. 
+1. Clone this repository and open `IoT-supabase` folder to PlatformIO. Then select NodeMCU 1.0 (ESP-12E Module) board. 
 2. Open `./src/main.cpp`
 3. Edit the `const String url` and `const String apikey` variables as in your supabase project
 4. Put your Wi-Fi SSID in `const char *ssid` variable and your Wi-Fi password in `const char *password`

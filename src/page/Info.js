@@ -37,7 +37,7 @@ export default function Info() {
   if (!data) return <Loading />;
   if (error) return <ErrorMessage />;
   const api = data[data.length - 1];
-  const fault = now - new Date(api.time) > 300000 ? true : false;
+  const fault = now - new Date(api.time) > api.refresh ? true : false;
 
   return (
     <>
