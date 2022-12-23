@@ -73,7 +73,7 @@ Make new project and then make new table with the following SQL Code
 ```sql
 create table data (
   time timestamp with time zone default timezone('utc'::text, now()) not null PRIMARY KEY,
-  data jsonb,
+  data json,
   refresh int4
 );
 
