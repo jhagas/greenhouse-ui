@@ -34,13 +34,13 @@ const int res = 5000; // refresh rate perangkat (5 detik)
 bool isSend = true;
 
 // tambahkan/kurangi sensor sesuai kebutuhan anda
-const int jumlahSensor = 3;
+const int jumlahSensor = 4;
 // nama sensor untuk ditampilkan pada web, isi pada array harus sesuai jumlah sensor
-String name[jumlahSensor] = {"Suhu", "Kelembapan Relatif", "Iluminansi"};
+String name[jumlahSensor] = {"Suhu", "Kelembapan Relatif", "Iluminansi", "pH Tanah"};
 // tipe sensor untuk ikon web, isi pada array harus sesuai jumlah sensor
-String type[jumlahSensor] = {"temperature", "relativeHumidity", "illuminance"};
+String type[jumlahSensor] = {"temperature", "relativeHumidity", "illuminance", "ph"};
 // satuan data sensor untuk tampilan web, isi pada array harus sesuai jumlah sensor
-String unit[jumlahSensor] = {"°C", "%", "Lux"};
+String unit[jumlahSensor] = {"°C", "%", "Lux", ""};
 // nilai data sensor
 float value[jumlahSensor];
 
@@ -68,10 +68,11 @@ void loop()
 {
   unsigned long t1 = millis();
 
-  // masukkan nilai sensor, jumlah masukan harus sesuai jumlah sensor (dalam contoh ini 3)
+  // masukkan nilai sensor, jumlah masukan harus sesuai jumlah sensor (dalam contoh ini 4)
   value[0] = dht.readTemperature();
   value[1] = dht.readHumidity();
   value[2] = lightMeter.readLightLevel();
+  value[3] = ( -0.0693 * analogRead(A0) ) + 7.3855; //Calibration formula from ADC to pH
 
   if (lastTime >= timeDelay)
   {
