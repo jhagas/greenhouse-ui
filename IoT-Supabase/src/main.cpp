@@ -68,14 +68,21 @@ void loop()
 {
   unsigned long t1 = millis();
 
-  // masukkan nilai sensor, jumlah masukan harus sesuai jumlah sensor (dalam contoh ini 4)
-  value[0] = dht.readTemperature();
-  value[1] = dht.readHumidity();
-  value[2] = lightMeter.readLightLevel();
-  value[3] = ( -0.0693 * analogRead(A0) ) + 7.3855; //Calibration formula from ADC to pH
-
   if (lastTime >= timeDelay)
   {
+    // masukkan nilai sensor, jumlah masukan harus sesuai jumlah sensor (dalam contoh ini 4)
+    value[0] = dht.readTemperature();
+    value[1] = dht.readHumidity();
+    value[2] = lightMeter.readLightLevel();
+    value[3] = (-0.0693 * analogRead(A0)) + 7.3855; // Calibration formula from ADC to pH
+
+    if (isnan(value[0]) || isnan(value[1]) || value[1] == 1 || value[0] == -50)
+    {
+      Serial.println(F("Failed to read from DHT sensor!"));
+      isSend = false;
+      return;
+    }
+
     lastTime = 0;
     String httpReqData = "";
     StaticJsonDocument<1024> doc;
@@ -107,11 +114,16 @@ void loop()
       else
         isSend = true;
 
-      if (httpCode < 0)
+      if (httpCode == 201 || httpCode == -11)
+      {
+        Serial.println("Success!!");
+      }
+      else
       {
         Serial.printf("[HTTPS] POST failed, error: %s\n", https.errorToString(httpCode).c_str());
         isSend = false;
       }
+
       https.end();
     }
     else
@@ -128,9 +140,9 @@ void loop()
   else
   {
     int elapsed = res - (t2 - t1);
+    lastTime += res;
     if (elapsed < 0)
       return;
-    lastTime += elapsed;
     delay(elapsed);
   }
 }
