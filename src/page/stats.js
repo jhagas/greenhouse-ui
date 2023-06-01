@@ -134,8 +134,9 @@ export default function Stats({ dark }) {
   const labels = [];
   const ds = [];
   const datasets = [];
+  const length = data.length;
 
-  if (data.length > 0) {
+  if (length > 0) {
     data.forEach((data, index) => {
       const time = data.time;
       if (index === 0) {
@@ -143,14 +144,15 @@ export default function Stats({ dark }) {
           ds.push([{ x: time, y: sensor.value }]);
           const name = sensor.name;
           const unit = sensor.unit.length === 0 ? "" : " (" + sensor.unit + ")";
-          labels.push(name + unit);
+          !labels.includes(name + unit) && labels.push(name + unit);
         });
       } else {
         data.data.forEach((sensor, index) => {
-          ds[index].push({ x: time, y: sensor.value });
+          index < ds.length && ds[index].push({ x: time, y: sensor.value });
         });
       }
     });
+    console.log(ds);
 
     labels.forEach((label, index) => {
       datasets.push({
@@ -173,7 +175,7 @@ export default function Stats({ dark }) {
 
     data.forEach((data) => {
       let time = moment(data.time).format("D/MM/YYYY hh:mm:ss");
-      filename = moment(data.time).format("D/MM/YYYY")
+      filename = moment(data.time).format("D/MM/YYYY");
       let parted = { time };
 
       data.data.forEach((sensor) => {
@@ -220,6 +222,10 @@ export default function Stats({ dark }) {
               <option value={1}>Yesterday</option>
               <option value={2}>2 days ago</option>
               <option value={3}>3 days ago</option>
+              <option value={4}>4 days ago</option>
+              <option value={5}>5 days ago</option>
+              <option value={6}>6 days ago</option>
+              <option value={7}>7 days ago</option>
             </select>
             <button className="btn btn-primary btn-xs" onClick={downloadCSV}>
               Download Data
