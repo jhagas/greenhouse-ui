@@ -23,5 +23,22 @@ String unit[jumlahSensor] = {"°C", "%", "Lux", ""};
 // nilai data sensor
 float value[jumlahSensor];
 
-// variabel untuk respon POST request HTTP
-int httpCode;
+String makeJSON(float value[])
+{
+    String httpReqData = "";
+    StaticJsonDocument<1024> doc;
+    doc["refresh"] = timeDelay;
+    JsonArray data = doc.createNestedArray("data");
+
+    for (int i = 0; i < jumlahSensor; i++)
+    {
+        JsonObject sensor = data.createNestedObject();
+        sensor["name"] = name[i];
+        sensor["type"] = type[i];
+        sensor["unit"] = unit[i];
+        sensor["value"] = value[i];
+    }
+    serializeJson(doc, httpReqData);
+
+    return httpReqData;
+}

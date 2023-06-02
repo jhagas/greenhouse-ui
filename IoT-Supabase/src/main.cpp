@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>
 #include "ArduinoJson.h"
-#include "const.h"
 #include <ESP32_Supabase.h>
 #include <SimpleTimer.h>
 
@@ -8,6 +7,9 @@
 #include "DHT.h"
 #include <Wire.h>
 #include <BH1750.h>
+
+// konstanta yang terpisah file
+#include "const.h"
 
 // Memulai library untuk sensor
 #define DHTPIN 12
@@ -28,20 +30,7 @@ void dataSend()
   value[3] = (-0.0693 * analogRead(A0)) + 7.3855; // Calibration formula from ADC to pH
   // -------------------------------
 
-  String httpReqData = "";
-  StaticJsonDocument<1024> doc;
-  doc["refresh"] = timeDelay;
-  JsonArray data = doc.createNestedArray("data");
-
-  for (int i = 0; i < jumlahSensor; i++)
-  {
-    JsonObject sensor = data.createNestedObject();
-    sensor["name"] = name[i];
-    sensor["type"] = type[i];
-    sensor["unit"] = unit[i];
-    sensor["value"] = value[i];
-  }
-  serializeJson(doc, httpReqData);
+  String httpReqData = makeJSON(value);
   int code = db.insert(table, httpReqData, false);
   Serial.println(code);
 }
