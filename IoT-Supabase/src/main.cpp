@@ -43,6 +43,7 @@ void setup()
   dht.begin();
   Wire.begin();
   lightMeter.begin();
+  db.begin(url, apikey);
 
   // Koneksi ke Wi-Fi
   WiFi.begin(ssid, password);
