@@ -14,6 +14,10 @@ const Icons = {
   ph: <GiChemicalDrop size="32px" />,
 };
 
+function isString(x) {
+  return Object.prototype.toString.call(x) === '[object String]';
+}
+
 export default function Info() {
   const [now, setNow] = useState(new Date());
 
@@ -118,7 +122,7 @@ export default function Info() {
                     {data.name}
                   </div>
                   <div className="stat-value text-cyan-900 dark:text-stone-300">
-                    {data.value.toFixed(1) + " " + data.unit}
+                    {isString(data.value) ? data.value : data.value.toFixed(1) + " " + data.unit}
                   </div>
                 </div>
               ))}
