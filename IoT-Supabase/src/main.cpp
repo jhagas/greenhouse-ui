@@ -12,7 +12,9 @@
 #include "const.h"
 
 // Memulai library untuk sensor
-#define DHTPIN 12
+#define soil A0
+#define rly D7
+#define DHTPIN D5
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 BH1750 lightMeter;
@@ -27,23 +29,45 @@ void dataSend()
   value[0] = dht.readTemperature();
   value[1] = dht.readHumidity();
   value[2] = lightMeter.readLightLevel();
-  value[3] = (-0.0693 * analogRead(A0)) + 7.3855; // Calibration formula from ADC to pH
-  // -------------------------------
+  value[3] = (((map(analogRead(soil), 650, 1024, 0, 100)) - 100) * -1);
+  
+  //  -------------------------------
+  Serial.println(value[0]);
+  Serial.println(value[1]);
+  Serial.println(value[2]);
+  Serial.println(value[3]);
 
   String httpReqData = makeJSON(value);
   int code = db.insert(table, httpReqData, false);
   Serial.println(code);
 }
 
+// function that automatically turn the pump on/off
+void pump()
+{
+  float soilM = (((map(analogRead(soil), 650, 1024, 0, 100)) - 100) * -1);
+  //float soilM = 40;
+  if (soilM < 40)
+  {
+    value[4]=1 ;
+    digitalWrite(rly, !value[4]);
+  }
+  else if (soilM > 70)
+  {
+    value[4]=0 ;
+    digitalWrite(rly, !value[4]);
+  } 
+}
+
 void setup()
 {
   Serial.begin(9600);
+  db.begin(url, apikey);
 
   // memulai library untuk sensor
   dht.begin();
   Wire.begin();
   lightMeter.begin();
-  db.begin(url, apikey);
 
   // Koneksi ke Wi-Fi
   WiFi.begin(ssid, password);
@@ -52,7 +76,10 @@ void setup()
     delay(500);
     Serial.print(".");
   }
+  pinMode(rly, OUTPUT);
+  timer.setInterval(timeDelay, pump);
   timer.setInterval(timeDelay, dataSend);
+  digitalWrite(rly, HIGH);
 }
 
 void loop()
